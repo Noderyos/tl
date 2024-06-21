@@ -1,7 +1,7 @@
 
 
-all: src/main.c src/lexer.c
-	$(CC) -Iinclude -o main src/main.c src/lexer.c -Wall -Wextra -Werror
+all: src/main.c src/lexer.c src/parser.c
+	$(CC) -Wall -Wextra -Werror -Iinclude -o main src/main.c src/lexer.c src/parser.c -g -ggdb
 
 clean:
 	rm -f main

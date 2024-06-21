@@ -53,7 +53,9 @@ int is_symbol(char c){
 Token lexer_next(Lexer *l){
     lexer_trim_left(l);
     Token token = {
-            .text = &l->content[l->cursor]
+            .text = &l->content[l->cursor],
+            .row = l->line,
+            .col = l->cursor - l->bol
     };
 
     if (l->cursor >= l->content_len) return token;
@@ -101,6 +103,6 @@ char *lexer_pretty(Token t){
         case TOKEN_DASH: return "dash";
         case TOKEN_OPEN_CURLY: return "open curly";
         case TOKEN_CLOSE_CURLY: return "close curly";
-        default: UNREACHABLE("token_type_name");
+        default: INVALID_TOKEN("Invalid Token", t);
     }
 }

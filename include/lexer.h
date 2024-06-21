@@ -10,11 +10,14 @@
 
 
 #define UNUSED(x) (void)(x)
-#define UNREACHABLE(...)                                                      \
-    do {                                                                      \
-        printf("%s:%d: UNREACHABLE: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
-        exit(1);                                                              \
+
+#define INVALID_TOKEN(type, t)                                                   \
+    do {                                                                         \
+        fprintf(stderr, "INVALID_TOKEN: %s at %ld:%ld", type, t.row+1, t.col+1); \
+        exit(1);                                                                 \
     } while(0)
+
+#define TOKEN_PRINT(t) (int)t.text_len, t.text
 
 typedef enum {
     TOKEN_END = 0,
@@ -32,6 +35,8 @@ typedef struct {
     Token_Type type;
     const char *text;
     size_t text_len;
+    size_t row;
+    size_t col;
 } Token;
 
 typedef struct {
