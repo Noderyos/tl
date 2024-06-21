@@ -1,0 +1,8 @@
+case Q0 0 -> 0 Q0
+case Q0 1 -> 1 Q0
+case Q0 B <- B Q1
+case Q1 1 <- 0 Q1
+case Q1 B -- 1 Halt
+case Q1 0 -- 1 Halt
+
+run { 1 0 1 1 1 }
