@@ -17,7 +17,7 @@ const char *keywords[] = {
         "case", "run", "trace"
 };
 
-size_t keywords_count = 2;
+size_t keywords_count = 3;
 
 
 Lexer lexer_init(char *content, size_t content_len){
