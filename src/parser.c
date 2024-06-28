@@ -3,9 +3,56 @@
 #define CHECK_TYPE(t, ty, exp) \
     if(t.type != ty){          \
         printf("INVALID_TOKEN at %ld:%ld %s\n", t.row + 1, t.col+1, exp); \
-        return statement;                           \
+        return statement;                                                 \
     }
 
+#define MAX_STATE_COUNT 256
+#define MAX_STATE_NAME_SIZE 256
+#define MAX_VALUE_COUNT 256
+#define MAX_VALUE_NAME_SIZE 256
+
+char states[MAX_STATE_NAME_SIZE][MAX_STATE_COUNT] = {
+        [0] = "Halt"
+};
+char values[MAX_VALUE_NAME_SIZE][MAX_VALUE_COUNT] = {
+        [0] = "B"
+};
+
+
+int get_state_id(Token t){
+    for (int i = 0; i < MAX_STATE_COUNT; ++i) {
+        if(states[i][0] == 0){
+            memcpy(states[i], t.text, t.text_len);
+            return i;
+        }
+        if(memcmp(states[i], t.text, t.text_len) == 0){
+            return i;
+        }
+    }
+    return -1;
+}
+
+int get_value_id(Token t){
+    for (int i = 0; i < MAX_STATE_COUNT; ++i) {
+        if(values[i][0] == 0){
+            memcpy(values[i], t.text, t.text_len);
+            return i;
+        }
+        if(memcmp(values[i], t.text, t.text_len) == 0){
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+char* get_value_by_id(int id){
+    return values[id];
+}
+
+char* get_state_by_id(int id){
+    return states[id];
+}
 
 Statement parser_next_statement(Lexer *l){
     Statement statement = {0};
@@ -17,17 +64,19 @@ Statement parser_next_statement(Lexer *l){
         return statement;
     }
 
-    CHECK_TYPE(t, TOKEN_KEYWORD, "expecting keyword")
+    if(t.type != TOKEN_KEYWORD){
+        INVALID_TOKEN("Expecting keyword", t);
+    }
 
     if(t.text_len == 4 && memcmp(t.text, "case", 4) == 0){
         statement.type = STMT_CASE;
         Case_Stmt caseStmt = {0};
 
-        caseStmt.state = parser_parse_symbol(l);
-        caseStmt.read = parser_parse_symbol(l);
+        caseStmt.state = get_state_id(parser_parse_symbol(l));
+        caseStmt.read = get_value_id(parser_parse_symbol(l));
         caseStmt.direction = parser_parse_arrow(l);
-        caseStmt.write = parser_parse_symbol(l);
-        caseStmt.next_state = parser_parse_symbol(l);
+        caseStmt.write = get_value_id(parser_parse_symbol(l));
+        caseStmt.next_state = get_state_id(parser_parse_symbol(l));
 
         statement.parameters = malloc(sizeof(caseStmt));
         memcpy(statement.parameters, &caseStmt, sizeof(caseStmt));
@@ -47,9 +96,10 @@ Statement parser_next_statement(Lexer *l){
                 INVALID_TOKEN("Unexpected EOF", t);
             }
             runStmt.tape_size++;
-            runStmt.tape = realloc(runStmt.tape, runStmt.tape_size * sizeof(Token));
-            assert(runStmt.tape != NULL);
-            runStmt.tape[runStmt.tape_size-1] = t;
+            runStmt.tape = realloc(runStmt.tape, runStmt.tape_size * sizeof(int));
+
+            ASSERT(runStmt.tape != NULL, "Please buy more RAM");
+            runStmt.tape[runStmt.tape_size-1] = get_value_id(t);
             t = lexer_next(l);
         }
         statement.parameters = malloc(sizeof(Run_Stmt));
@@ -72,9 +122,9 @@ Statement parser_next_statement(Lexer *l){
                 INVALID_TOKEN("Unexpected EOF", t);
             }
             traceStmt.tape_size++;
-            traceStmt.tape = realloc(traceStmt.tape, traceStmt.tape_size * sizeof(Token));
-            assert(traceStmt.tape != NULL);
-            traceStmt.tape[traceStmt.tape_size - 1] = t;
+            traceStmt.tape = realloc(traceStmt.tape, traceStmt.tape_size * sizeof(int));
+            ASSERT(traceStmt.tape != NULL, "Please buy more RAM")
+            traceStmt.tape[traceStmt.tape_size - 1] = get_value_id(t);
             t = lexer_next(l);
         }
         statement.parameters = malloc(sizeof(Run_Stmt));

@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
-#include <ctype.h>
 
 
 #define UNUSED(x) (void)(x)
@@ -16,6 +14,15 @@
         fprintf(stderr, "INVALID_TOKEN: %s at %ld:%ld", type, t.row+1, t.col+1); \
         exit(1);                                                                 \
     } while(0)
+
+#define isspace(c) (strchr(" \n\t", c) != NULL)
+#define isalnum(c) (strchr("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", c) != NULL)
+
+#define ASSERT(cond, msg)           \
+    if(!(cond)) {                   \
+        fprintf(stderr, "%s", msg); \
+        exit(1);                    \
+    }
 
 #define TOKEN_PRINT(t) (int)t.text_len, t.text
 

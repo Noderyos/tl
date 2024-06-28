@@ -19,15 +19,15 @@ typedef enum {
 } Statement_Type;
 
 typedef struct {
-    Token state;
-    Token read;
+    int state;
+    int read;
     Direction direction;
-    Token write;
-    Token next_state;
+    int write;
+    int next_state;
 } Case_Stmt;
 
 typedef struct {
-    Token *tape;
+    int *tape;
     size_t tape_size;
 } Run_Stmt;
 
@@ -40,5 +40,8 @@ Statement parser_next_statement(Lexer *l);
 Direction parser_parse_arrow(Lexer *l);
 Token parser_parse_symbol(Lexer *l);
 char *parser_direction_pretty(Direction d);
+
+char* get_value_by_id(int id);
+char* get_state_by_id(int id);
 
 #endif

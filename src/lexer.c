@@ -28,7 +28,7 @@ Lexer lexer_init(char *content, size_t content_len){
 }
 
 char lexer_chop_char(Lexer *l){
-    assert(l->cursor < l->content_len);
+    ASSERT(l->cursor < l->content_len, "Unexpected EOF")
 
     char x = l->content[l->cursor];
     l->cursor++;
@@ -38,6 +38,7 @@ char lexer_chop_char(Lexer *l){
     }
     return x;
 }
+
 
 void lexer_trim_left(Lexer *l){
     while (l->cursor < l->content_len && isspace(l->content[l->cursor])){
